@@ -2,6 +2,8 @@ const { response } = require('express')
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
   {
     name: "Arto Hellas",
@@ -35,13 +37,6 @@ let persons = [
   }
 ]  
 
-/*
-const app = http.createServer((request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' })
-  response.end(JSON.stringify(persons))
-})
-*/
-
 app.get('/', (req, res) => {
   res.send('<h1>Hello there!</h1>')
 })
@@ -65,9 +60,15 @@ app.get('/api/persons/:id', (req, res) => {
     res.status(404).end()
     console.log('ei löytynyt')
   }
-  
+})
 
-  //jotain koodia siitä että id:tä ei löydy
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  
+  persons = persons.filter(person => person.id !== id)
+  
+  res.status(204).end()
+
 })
 
 const PORT = 3001
