@@ -1,1 +1,1 @@
-GET http://localhost:3001/info
+GET https://floating-atoll-54652.herokuapp.com/info

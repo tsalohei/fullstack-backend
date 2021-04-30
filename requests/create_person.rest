@@ -1,7 +1,7 @@
-POST http://localhost:3001/api/persons
+POST https://floating-atoll-54652.herokuapp.com/api/persons
 Content-type: application/json
 
 {
-    "name": "Yrmeli Yrmeä",
-    "number": "83838743737338"    
+    "name": "Kikattava Kakkiainen",
+    "number": "98987987987"    
 }
