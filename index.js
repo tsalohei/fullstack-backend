@@ -14,6 +14,16 @@ morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
 app.get('/', (req, res) => {
   res.send('<h1>Hello there!</h1>')
 })
@@ -31,7 +41,8 @@ app.get('/api/persons', (req, res) => {
   
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
+  /*
   const id = Number(req.params.id)
   const person = persons.find(p => p.id === id)
 
@@ -41,6 +52,23 @@ app.get('/api/persons/:id', (req, res) => {
     res.status(404).end()
     console.log('ei löytynyt')
   }
+  */
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log("WAT IS THIS")
+      next(error)
+    })
+
+
+
+
 })
 
 /*
@@ -106,9 +134,13 @@ app.post('/api/persons', (req, res) => {
 
 })
 
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+}
 
+app.use(unknownEndpoint)
 
-
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT || 3001
