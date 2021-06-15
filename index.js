@@ -1,8 +1,10 @@
+require('dotenv').config()
 const { response } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
+const Person = require('./models/person')
 
 app.use(express.static('build'))
 app.use(cors())
@@ -12,6 +14,8 @@ morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+
+/*
 let persons = [
   {
     name: "Arto Hellas",
@@ -44,6 +48,7 @@ let persons = [
     id: 8
   }
 ]  
+*/
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello there!</h1>')
@@ -54,9 +59,23 @@ app.get('/info', (req, res) => {
 
 })
 
+/*
 app.get('/api/persons', (req, res) => {
   res.json(persons)
 })
+*/
+
+
+app.get('/api/persons', (req, res) => {
+  Person.find({}).then(persons => {
+    console.log(persons)
+    res.json(persons)
+  })
+  
+})
+
+
+
 
 app.get('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
@@ -70,6 +89,7 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
+/*
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
   
@@ -77,6 +97,14 @@ app.delete('/api/persons/:id', (req, res) => {
   
   res.status(204).end()
 
+})
+*/
+app.delete('/api/persons/:id', (req, res, next) => {
+  Note.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res) => {
