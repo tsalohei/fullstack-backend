@@ -35,24 +35,12 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
-    //console.log(persons)
     res.json(persons)
   })
   
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
-  /*
-  const id = Number(req.params.id)
-  const person = persons.find(p => p.id === id)
-
-  if (person) {
-    res.json(person)    
-  } else {
-    res.status(404).end()
-    console.log('ei löytynyt')
-  }
-  */
   Person.findById(req.params.id)
     .then(person => {
       if (person) {
@@ -65,10 +53,6 @@ app.get('/api/persons/:id', (req, res, next) => {
       console.log("WAT IS THIS")
       next(error)
     })
-
-
-
-
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -109,7 +93,6 @@ app.post('/api/persons', (req, res) => {
       error: 'name or number is missing!'
     })
   }
-  //KÄSITTELE TUPLAHENKILÖ-ERROR
 
   const person = new Person ({
     name: body.name,
@@ -120,6 +103,21 @@ app.post('/api/persons', (req, res) => {
     res.json(savedPerson)
   })
 
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
