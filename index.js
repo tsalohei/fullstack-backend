@@ -28,9 +28,12 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello there!</h1>')
 })
 
-app.get('/info', (req, res) => {
-  res.send(`<p>Application has info for ${persons.length} people</p> ${new Date()}`)
-
+app.get('/info', (req, res, next) => {
+ Person.countDocuments({})
+    .then(count => {
+      res.send(`<p>Application has info for ${count} people</p> ${new Date()}`)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/persons', (req, res) => {
@@ -63,28 +66,6 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-/*
-app.post('/api/persons', (req, res) => {
-  const person = req.body
-
-  if (!person.name || !person.number) {
-    return res.status(400).json({
-      error: 'name or number is missing'
-    })
-
-  } else if (persons.find(p => p.name === person.name)) {
-    return res.status(400).json({
-      error: 'name is already in phonebook'
-    })
-  }
-
-  const newId = Math.round(Math.random() * (2000 - 100) + 100)
-  person.id = newId
-  persons = persons.concat(person)
-
-  res.json(person)
-})
-*/
 app.post('/api/persons', (req, res) => {
   const body = req.body
 
